@@ -19,7 +19,7 @@
     <title>Hello, world!</title>
   </head>
   <body>
-    <h1>Hello, world{{request.user }}</h1>
+    <h1>Hello, world{{request.user.username }}</h1>
     <a href="/lougout" >Lougout<a>
 
       <div class="container">
@@ -40,9 +40,25 @@
     <ul>
         {% for member in members %}
         <li>
-            <strong>{{ member.firstname }}</strong>: {{ member.description }}
+            <strong>{{ member.id }}</strong>: {{ member.description }}
+            <form action="/deletepost?_id={{ member.id }}&_name={{ member.firstname }}" method="post">
+              {% csrf_token %}
+              <button type="submit">Delete</button>
+            </form>
+            
+            {% if request.user.username == member.firstname %}
+            <form action="/change?_id={{ member.id }}" method="post">
+                {% csrf_token %}
+                <input type="text" name="data"> 
+                
+                <button type="submit">Change</button>
+            </form>
+           {% endif %}
+           
         </li>
+        <p>****************************************</p>
         {% endfor %}
+        
     </ul>
 
     <!-- Optional JavaScript -->

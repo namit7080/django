@@ -6,7 +6,7 @@ from .models import Member
 # Create your views here.
 def index(request):
     # return HttpResponse("This is home Page")
-    print(request.user.username)
+    
     if request.user.is_anonymous:
         return redirect('/loginUser')
     
@@ -53,6 +53,49 @@ def createPost(request):
         return redirect('/')
     return render(request, 'create_post.html')
 
+def deletePost(request):
+    if request.user.is_anonymous:
+        return redirect('/loginUser')
+    
+    elif request.method == 'POST':
+        # Fetch parameters from request.GET for query parameters
+        _id = request.GET.get('_id')  # Fetch the _id parameter from the URL
+        _name = request.GET.get('_name')  # Fetch the _name parameter from the URL
+        
+        try:
+            mypost = Member.objects.get(id=_id)  # Retrieve the specific post
+            firstname = mypost.firstname
+            if request.user.username==firstname:
+                mypost.delete()
+            
+        except Member.DoesNotExist:
+            
+            return HttpResponse("Post not found", status=404)
+
+          # Print the post to the console for debugging
+        # Delete the post
+        return redirect('/') 
+    
+
+def change(request):
+    if request.user.is_anonymous:
+        return redirect('/loginUser')
+    
+    elif request.method == 'POST':  
+        id= request.GET.get('_id')
+        try:
+            mypost = Member.objects.get(id=id)
+            data= request.POST.get('data')
+            firstname= mypost.firstname
+            if request.user.username==firstname and data is not None:
+               mypost.description=data
+               mypost.save()
+
+        except Member.DoesNotExist or data is None:
+            
+            return HttpResponse("Post not found", status=404)   
+
+    return redirect('/')      
    
 
     
